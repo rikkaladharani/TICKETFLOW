@@ -1,0 +1,535 @@
+{
+  "info": {
+    "_postman_id": "ticketflow-collection-2026",
+    "name": "TICKETFLOW API Collection",
+    "description": "Complete full-stack REST API collection for TICKETFLOW Event Ticket Booking & Management System covering all 4 user roles (Customer, Organizer, Stall Owner, Admin).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication & Users",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Morgan\",\n  \"email\": \"customer@ticketflow.com\",\n  \"password\": \"pass123\",\n  \"phone\": \"9876543210\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Organizer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Connor\",\n  \"email\": \"organizer@ticketflow.com\",\n  \"password\": \"pass123\",\n  \"phone\": \"9876543211\",\n  \"role\": \"ORGANIZER\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Stall Owner",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Chef\",\n  \"lastName\": \"Mario\",\n  \"email\": \"stall@ticketflow.com\",\n  \"password\": \"pass123\",\n  \"phone\": \"9876543212\",\n  \"role\": \"STALL_OWNER\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"System\",\n  \"lastName\": \"Admin\",\n  \"email\": \"admin@ticketflow.com\",\n  \"password\": \"admin123\",\n  \"phone\": \"9876543299\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (Auto-sets JWT Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "    pm.environment.set('user_id', jsonData.id);",
+                  "    console.log('JWT Token and User ID updated!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@ticketflow.com\",\n  \"password\": \"pass123\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Morgan\",\n  \"email\": \"customer@ticketflow.com\",\n  \"phone\": \"9998887776\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/profile/{{user_id}}", "host": ["{{base_url}}"], "path": ["auth", "profile", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/auth/users", "host": ["{{base_url}}"], "path": ["auth", "users"] }
+          }
+        },
+        {
+          "name": "Update User Role (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ORGANIZER\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/users/{{user_id}}/role", "host": ["{{base_url}}"], "path": ["auth", "users", "{{user_id}}", "role"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Venues & Seating Layouts",
+      "item": [
+        {
+          "name": "Create Venue",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hyderabad Hitex Arena\",\n  \"address\": \"HITEC City, Madhapur\",\n  \"city\": \"Hyderabad\",\n  \"capacity\": 5000\n}"
+            },
+            "url": { "raw": "{{base_url}}/venues", "host": ["{{base_url}}"], "path": ["venues"] }
+          }
+        },
+        {
+          "name": "Get All Venues",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/venues", "host": ["{{base_url}}"], "path": ["venues"] }
+          }
+        },
+        {
+          "name": "Create Venue Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"venueId\": {{venue_id}},\n  \"name\": \"VIP Front Row\",\n  \"capacity\": 100,\n  \"seatType\": \"VIP\",\n  \"basePrice\": 1499.0\n}"
+            },
+            "url": { "raw": "{{base_url}}/venue-sections", "host": ["{{base_url}}"], "path": ["venue-sections"] }
+          }
+        },
+        {
+          "name": "Generate Seats for Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"venueSectionId\": 1,\n  \"rows\": 5,\n  \"seatsPerRow\": 10\n}"
+            },
+            "url": { "raw": "{{base_url}}/seats/generate", "host": ["{{base_url}}"], "path": ["seats", "generate"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Events",
+      "item": [
+        {
+          "name": "Create Event (Organizer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Rockfest 2026 Live Concert\",\n  \"description\": \"An electrifying night of live rock music featuring top national bands!\",\n  \"category\": \"CONCERT\",\n  \"eventDate\": \"2026-11-20\",\n  \"startTime\": \"18:00:00\",\n  \"endTime\": \"22:00:00\",\n  \"venueId\": {{venue_id}},\n  \"organizerId\": {{organizer_id}},\n  \"imageUrl\": \"https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/events", "host": ["{{base_url}}"], "path": ["events"] }
+          }
+        },
+        {
+          "name": "Get All Events (Public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/events", "host": ["{{base_url}}"], "path": ["events"] }
+          }
+        },
+        {
+          "name": "Get Event By ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/events/{{event_id}}", "host": ["{{base_url}}"], "path": ["events", "{{event_id}}"] }
+          }
+        },
+        {
+          "name": "Get Available Event Seats",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/event-seats/event/{{event_id}}/available", "host": ["{{base_url}}"], "path": ["event-seats", "event", "{{event_id}}", "available"] }
+          }
+        },
+        {
+          "name": "Approve Event (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/events/{{event_id}}/approve", "host": ["{{base_url}}"], "path": ["events", "{{event_id}}", "approve"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Stalls & Food Menus",
+      "item": [
+        {
+          "name": "Create Stall (Stall Owner)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": {{stall_owner_id}},\n  \"stallName\": \"Tacos & Burgers Hub\",\n  \"description\": \"Fresh gourmet tacos, burgers, and iced craft beverages.\",\n  \"category\": \"FOOD\",\n  \"contactNumber\": \"9876543212\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/stalls", "host": ["{{base_url}}"], "path": ["stalls"] }
+          }
+        },
+        {
+          "name": "Approve Stall (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/stalls/{{stall_id}}/approve", "host": ["{{base_url}}"], "path": ["stalls", "{{stall_id}}", "approve"] }
+          }
+        },
+        {
+          "name": "Add Menu Item to Stall",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stallId\": {{stall_id}},\n  \"itemName\": \"Crispy Loaded Nachos\",\n  \"description\": \"Topped with cheese, salsa and jalapenos\",\n  \"category\": \"SNACK\",\n  \"price\": 180.0,\n  \"availableQuantity\": 100,\n  \"available\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/stall-items", "host": ["{{base_url}}"], "path": ["stall-items"] }
+          }
+        },
+        {
+          "name": "Get Stall Items",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/stall-items/stall/{{stall_id}}", "host": ["{{base_url}}"], "path": ["stall-items", "stall", "{{stall_id}}"] }
+          }
+        },
+        {
+          "name": "Apply Stall for Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": {{event_id}},\n  \"stallId\": {{stall_id}}\n}"
+            },
+            "url": { "raw": "{{base_url}}/event-stalls", "host": ["{{base_url}}"], "path": ["event-stalls"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Bookings, Payments & Tickets",
+      "item": [
+        {
+          "name": "Create Booking (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": {{user_id}},\n  \"eventId\": {{event_id}},\n  \"seatIds\": [1, 2],\n  \"couponCode\": \"WELCOME10\",\n  \"foodItems\": [\n    {\n      \"stallItemId\": 1,\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/bookings", "host": ["{{base_url}}"], "path": ["bookings"] }
+          }
+        },
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": {{booking_id}},\n  \"paymentMethod\": \"UPI\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/payments", "host": ["{{base_url}}"], "path": ["payments"] }
+          }
+        },
+        {
+          "name": "Generate QR Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/tickets/booking/{{booking_id}}", "host": ["{{base_url}}"], "path": ["tickets", "booking", "{{booking_id}}"] }
+          }
+        },
+        {
+          "name": "Get Customer Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/tickets/customer/{{user_id}}", "host": ["{{base_url}}"], "path": ["tickets", "customer", "{{user_id}}"] }
+          }
+        },
+        {
+          "name": "Cancel Booking & Request Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Schedule conflict; unable to attend.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/bookings/{{booking_id}}/cancel", "host": ["{{base_url}}"], "path": ["bookings", "{{booking_id}}", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. QR Gate Check-In",
+      "item": [
+        {
+          "name": "Gate Check-In by Ticket Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{ticket_number}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/tickets/check-in", "host": ["{{base_url}}"], "path": ["tickets", "check-in"] }
+          }
+        },
+        {
+          "name": "Gate Check-In with Full QR Payload",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"TICKETFLOW|{{ticket_number}}|BOOKING:BKG-12345678\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/tickets/check-in", "host": ["{{base_url}}"], "path": ["tickets", "check-in"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Reviews & Ratings",
+      "item": [
+        {
+          "name": "Add Event Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": {{event_id}},\n  \"rating\": 5,\n  \"comment\": \"Amazing concert! Acoustics were unbelievable and great food stalls!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"] }
+          }
+        },
+        {
+          "name": "Get Event Reviews",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/reviews/event/{{event_id}}", "host": ["{{base_url}}"], "path": ["reviews", "event", "{{event_id}}"] }
+          }
+        },
+        {
+          "name": "Get Event Rating Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/reviews/event/{{event_id}}/rating", "host": ["{{base_url}}"], "path": ["reviews", "event", "{{event_id}}", "rating"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"] }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/notifications/unread-count", "host": ["{{base_url}}"], "path": ["notifications", "unread-count"] }
+          }
+        },
+        {
+          "name": "Mark All Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/notifications/read-all", "host": ["{{base_url}}"], "path": ["notifications", "read-all"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Admin Portal & Audit Logs",
+      "item": [
+        {
+          "name": "Get Admin Booking Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/bookings/admin/statistics", "host": ["{{base_url}}"], "path": ["bookings", "admin", "statistics"] }
+          }
+        },
+        {
+          "name": "Get All Refund Claims (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/bookings/admin/refunds", "host": ["{{base_url}}"], "path": ["bookings", "admin", "refunds"] }
+          }
+        },
+        {
+          "name": "Process Refund (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/bookings/admin/refunds/{{refund_id}}/process", "host": ["{{base_url}}"], "path": ["bookings", "admin", "refunds", "{{refund_id}}", "process"] }
+          }
+        },
+        {
+          "name": "Get Platform Audit Logs (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/activity-logs", "host": ["{{base_url}}"], "path": ["activity-logs"] }
+          }
+        }
+      ]
+    }
+  ]
+}
